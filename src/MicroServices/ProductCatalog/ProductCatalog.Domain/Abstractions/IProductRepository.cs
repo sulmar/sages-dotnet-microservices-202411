@@ -5,4 +5,5 @@ namespace ProductCatalog.Domain.Abstractions;
 public interface IProductRepository : IEntityRepository<Product>
 {
     Task<IEnumerable<Product>> GetByPrice(decimal from, decimal to);
+    Task<IEnumerable<Product>> GetBySearchCriteria(ProductSearchCriteria criteria);
 }
