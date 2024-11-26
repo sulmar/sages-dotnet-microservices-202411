@@ -27,6 +27,14 @@ builder.Services.AddTransient<Context>(sp =>
     return new Context { Products = products.ToDictionary(p => p.Id) };
 });
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+{
+    policy.WithOrigins("https://localhost:7108");
+    policy.WithMethods("GET");
+    policy.AllowAnyHeader();
+
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,13 +46,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.MapGet("/", () => "Hello ProductCatalog.Api");
 
 // TODO: Dodaj pobieranie produktów z repozytorium
 // GET api/products
 app.MapGet("api/products", async (IProductRepository repository) => await repository.GetAll());
-
-
 
 app.Run();
 
