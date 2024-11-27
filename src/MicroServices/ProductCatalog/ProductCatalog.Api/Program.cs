@@ -40,6 +40,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddTransient<ProductMapper>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
