@@ -1,6 +1,11 @@
+using MediatR;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using ShoppingCart.Domain.Abstractions;
+using ShoppingCart.Domain.Events;
 using ShoppingCart.Domain.Models;
+using ShoppingCart.Domain.Queries;
 using ShoppingCart.Infrastructure;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IShoppingCartRepository, FakeShoppingCartRepository>();
 builder.Services.AddTransient<IMessageService, EmailMessageService>();
 builder.Services.AddTransient<IDocumentService, PdfDocumentService>();
+
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
 var app = builder.Build();
 
@@ -34,19 +41,9 @@ app.MapPost("api/cart", async (CartItem item, IShoppingCartRepository repository
 });
 
 
-app.MapPost("/api/cart/checkout",  async (CartItem item, 
-    IShoppingCartRepository repository, 
-    IMessageService messageService,
-    IDocumentService documentService) =>
-{
-    await repository.Add(item);
+app.MapGet("api/cart/{id:int}", async (int id, IMediator mediator) => await mediator.Send(new GetCartItemQuery(id)));
 
-    var message = new Message { Title = "Hello World!" };
-    messageService.Send(message);
-
-    documentService.Generate();
-
-});
+app.MapPost("/api/cart/checkout",  async (CartItem item, IMediator mediator) => await mediator.Publish(new CheckoutEvent(item)));
 
 
 app.Run();

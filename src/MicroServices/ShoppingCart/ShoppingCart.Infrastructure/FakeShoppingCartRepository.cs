@@ -13,6 +13,11 @@ public class FakeShoppingCartRepository : IShoppingCartRepository
 
         return Task.CompletedTask;
     }
+
+    public Task<CartItem> Get(int id)
+    {
+        return Task.FromResult(new CartItem(1, "a", 1.99m));
+    }
 }
 
 
