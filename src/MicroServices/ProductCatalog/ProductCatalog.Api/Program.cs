@@ -55,15 +55,12 @@ app.MapGet("/", () => "Hello ProductCatalog.Api");
 // GET api/products
 app.MapGet("api/products", async (IProductRepository repository) => await repository.GetAll());
 
-app.MapGet("api/products/{id:int}", async (IProductRepository repository, int id) => {
-
-    var product = await repository.GetById(id);
-
-    if (product == null)
-        return Results.NotFound();
-    else
-        return Results.Ok(product);
-});
+app.MapGet("api/products/{id:int}", async (IProductRepository repository, int id) => 
+    await repository.GetById(id) switch
+    {
+        Product product => Results.Ok(product),
+        null => Results.NotFound()  
+    });
 
 app.Run();
 
