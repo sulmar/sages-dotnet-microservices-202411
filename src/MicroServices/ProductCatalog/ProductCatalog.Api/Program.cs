@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Mvc;
+using ProductCatalog.Api.Mappers;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Domain.Entities;
 using ProductCatalog.Infrastructure;
@@ -53,6 +54,13 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.MapGet("/", () => "Hello ProductCatalog.Api");
+
+app.MapGet("/products/map/{id:int}", async (IProductRepository repository, int id, ProductMapper mapper) =>
+{
+    var product = await repository.GetById(id);
+
+    return Results.Ok(mapper.Map(product));
+});
 
 
 app.MapFastEndpoints();
