@@ -7,7 +7,14 @@ namespace ProductCatalog.Infrastructure;
 public class FakeProductRepository(Context context) : IProductRepository
 {
     public Task<IEnumerable<Product>> GetAll() => Task.FromResult<IEnumerable<Product>>(context.Products.Values);
-    public Task<Product> GetById(int id) => Task.FromResult(context.Products[id]);
+    public Task<Product> GetById(int id)
+    {
+        if (context.Products.TryGetValue(id, out var product))
+            return Task.FromResult(product);
+        else
+            return Task.FromResult<Product>(null);
+    }
+
     public Task<IEnumerable<Product>> GetByPrice(decimal from, decimal to)
     {
         throw new NotImplementedException();

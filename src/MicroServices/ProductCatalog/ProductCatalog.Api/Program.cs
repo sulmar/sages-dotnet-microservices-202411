@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Domain.Entities;
 using ProductCatalog.Infrastructure;
@@ -53,6 +54,16 @@ app.MapGet("/", () => "Hello ProductCatalog.Api");
 // TODO: Dodaj pobieranie produktów z repozytorium
 // GET api/products
 app.MapGet("api/products", async (IProductRepository repository) => await repository.GetAll());
+
+app.MapGet("api/products/{id:int}", async (IProductRepository repository, int id) => {
+
+    var product = await repository.GetById(id);
+
+    if (product == null)
+        return Results.NotFound();
+    else
+        return Results.Ok(product);
+});
 
 app.Run();
 
