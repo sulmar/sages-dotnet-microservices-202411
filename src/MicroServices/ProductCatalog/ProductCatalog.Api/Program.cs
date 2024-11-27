@@ -1,3 +1,4 @@
+using FastEndpoints;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Domain.Entities;
@@ -36,6 +37,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 }));
 
+builder.Services.AddFastEndpoints();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -51,16 +54,7 @@ app.UseCors();
 
 app.MapGet("/", () => "Hello ProductCatalog.Api");
 
-// TODO: Dodaj pobieranie produktów z repozytorium
-// GET api/products
-app.MapGet("api/products", async (IProductRepository repository) => await repository.GetAll());
-
-app.MapGet("api/products/{id:int}", async (IProductRepository repository, int id) => 
-    await repository.GetById(id) switch
-    {
-        Product product => Results.Ok(product),
-        null => Results.NotFound()  
-    });
+app.MapFastEndpoints();
 
 app.Run();
 
