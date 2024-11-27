@@ -1,10 +1,14 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using ShoppingCart.Domain.Abstractions;
 using ShoppingCart.Domain.Events;
 using ShoppingCart.Domain.Models;
 using ShoppingCart.Domain.Queries;
+using ShoppingCart.Domain.Validators;
 using ShoppingCart.Infrastructure;
+using System;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +23,10 @@ builder.Services.AddTransient<IMessageService, EmailMessageService>();
 builder.Services.AddTransient<IDocumentService, PdfDocumentService>();
 
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddScoped<IValidator<CartItem>, CartItemValidator>();
+
 
 var app = builder.Build();
 
@@ -43,7 +51,19 @@ app.MapPost("api/cart", async (CartItem item, IShoppingCartRepository repository
 
 app.MapGet("api/cart/{id:int}", async (int id, IMediator mediator) => await mediator.Send(new GetCartItemQuery(id)));
 
-app.MapPost("/api/cart/checkout",  async (CartItem item, IMediator mediator) => await mediator.Publish(new CheckoutEvent(item)));
+app.MapPost("/api/cart/checkout", async (CartItem item, IMediator mediator, IValidator<CartItem> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(item);
+
+    if (!validationResult.IsValid)
+        return Results.ValidationProblem(validationResult.ToDictionary());
+
+    await mediator.Publish(new CheckoutEvent(item));
+
+    return Results.Ok();
+
+});
+
 
 
 app.Run();

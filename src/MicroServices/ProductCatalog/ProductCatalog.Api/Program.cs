@@ -54,6 +54,7 @@ app.UseCors();
 
 app.MapGet("/", () => "Hello ProductCatalog.Api");
 
+
 app.MapFastEndpoints();
 
 app.Run();
