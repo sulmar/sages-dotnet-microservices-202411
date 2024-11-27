@@ -2,8 +2,10 @@
 
 namespace ShoppingCart.Domain.Abstractions;
 
-public interface IShoppingCartRepository
+public interface IDocumentService
 {
-    Task Add(CartItem item);
+    byte[] Generate();    
 }
+
+
     

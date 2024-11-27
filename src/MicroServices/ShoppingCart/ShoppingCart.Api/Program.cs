@@ -10,6 +10,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IShoppingCartRepository, FakeShoppingCartRepository>();
+builder.Services.AddTransient<IMessageService, EmailMessageService>();
+builder.Services.AddTransient<IDocumentService, PdfDocumentService>();
 
 var app = builder.Build();
 
@@ -29,6 +31,21 @@ app.MapPost("api/cart", async (CartItem item, IShoppingCartRepository repository
     await repository.Add(item);
 
     return Results.Created();
+});
+
+
+app.MapPost("/api/cart/checkout",  async (CartItem item, 
+    IShoppingCartRepository repository, 
+    IMessageService messageService,
+    IDocumentService documentService) =>
+{
+    await repository.Add(item);
+
+    var message = new Message { Title = "Hello World!" };
+    messageService.Send(message);
+
+    documentService.Generate();
+
 });
 
 

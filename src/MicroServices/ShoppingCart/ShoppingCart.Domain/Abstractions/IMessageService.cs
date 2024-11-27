@@ -2,8 +2,10 @@
 
 namespace ShoppingCart.Domain.Abstractions;
 
-public interface IShoppingCartRepository
+public interface IMessageService
 {
-    Task Add(CartItem item);
+    void Send(Message message);
 }
+
+
     
