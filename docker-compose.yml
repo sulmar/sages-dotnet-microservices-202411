@@ -1,0 +1,27 @@
+services:
+  yarpapigateway:
+    image: ${DOCKER_REGISTRY-}yarpapigateway
+    build:
+      context: .
+      dockerfile: src/ApiGateway/YarpApiGateway/Dockerfile
+
+  auth.api:
+    image: ${DOCKER_REGISTRY-}authapi
+    build:
+      context: .
+      dockerfile: src/IdentityProvider/Auth.Api/Dockerfile
+
+
+  productcatalog.api:
+    image: ${DOCKER_REGISTRY-}productcatalogapi
+    build:
+      context: .
+      dockerfile: src/MicroServices/ProductCatalog/ProductCatalog.Api/Dockerfile
+
+
+  shoppingcart.api:
+    image: ${DOCKER_REGISTRY-}shoppingcartapi
+    build:
+      context: .
+      dockerfile: src/MicroServices/ShoppingCart/ShoppingCart.Api/Dockerfile
+
