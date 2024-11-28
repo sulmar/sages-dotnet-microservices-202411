@@ -1,8 +1,10 @@
 using FastEndpoints;
 using FastEndpoints.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using ProductCatalog.Api.Authorization;
 using ProductCatalog.Api.Mappers;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Domain.Entities;
@@ -81,6 +83,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     });
 
+
+builder.Services.AddTransient<IAuthorizationHandler, RoleOrClaimAuthorizationHandler>();
+
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("devops", policy =>
+    {        
+        policy.RequireAuthenticatedUser();
+        policy.RequireRole("developer");
+        policy.Requirements.Add(new RoleOrClaimAuthorizationRequirement("developer", "birthday"));
+    });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -106,7 +120,7 @@ app.MapGet("/api/products/map/{id:int}", async (IProductRepository repository, i
     var product = await repository.GetById(id);
 
     return Results.Ok(mapper.Map(product));
-}).RequireAuthorization();
+}).RequireAuthorization("devops");
 
 // PUT / PATCH
 

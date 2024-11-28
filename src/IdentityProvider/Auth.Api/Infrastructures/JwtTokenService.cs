@@ -17,6 +17,9 @@ public class JwtTokenService : ITokenService
         {
             new Claim(JwtRegisteredClaimNames.Sub, identity.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
+            new Claim(ClaimTypes.Role, "trainer"),
+            new Claim(ClaimTypes.Role, "developer"),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key-your-secret-key-your-secret-key"));
