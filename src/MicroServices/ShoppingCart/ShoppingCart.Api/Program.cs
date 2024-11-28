@@ -8,6 +8,7 @@ using ShoppingCart.Domain.Models;
 using ShoppingCart.Domain.Queries;
 using ShoppingCart.Domain.Validators;
 using ShoppingCart.Infrastructure;
+using StackExchange.Redis;
 using System;
 using System.Reflection;
 
@@ -18,7 +19,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<IShoppingCartRepository, FakeShoppingCartRepository>();
+// builder.Services.AddTransient<IShoppingCartRepository, FakeShoppingCartRepository>(); 
+builder.Services.AddTransient<IShoppingCartRepository, RedisShoppingCartRepository>();
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost:6379"));
+
 builder.Services.AddTransient<IMessageService, EmailMessageService>();
 builder.Services.AddTransient<IDocumentService, PdfDocumentService>();
 
