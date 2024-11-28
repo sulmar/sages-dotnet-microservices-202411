@@ -8,7 +8,7 @@ public class GetAll(IProductRepository repository) : EndpointWithoutRequest<IEnu
 {
     public override void Configure()
     {
-        AllowAnonymous();
+        //AllowAnonymous();
         Get("/api/products");
     }
 

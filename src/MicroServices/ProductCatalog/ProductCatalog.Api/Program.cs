@@ -1,9 +1,15 @@
 using FastEndpoints;
+using FastEndpoints.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ProductCatalog.Api.Mappers;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Domain.Entities;
 using ProductCatalog.Infrastructure;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,9 +44,44 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 }));
 
+string secretkey = "your-secret-key-your-secret-key-your-secret-key";
+
+// dotnet add package FastEndpoints.Security
 builder.Services.AddFastEndpoints();
+    // .AddJWTBearerAuth(secretkey);
 
 builder.Services.AddTransient<ProductMapper>();
+
+// dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["access-token"];
+                return Task.CompletedTask;
+            }
+        };
+
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "your-issuer",
+
+            ValidateAudience = true,
+            ValidAudience = "your-audience",
+
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretkey))
+        };
+
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -55,15 +96,19 @@ app.UseHttpsRedirection();
 
 app.UseCors();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/", () => "Hello ProductCatalog.Api");
 
-app.MapGet("/products/map/{id:int}", async (IProductRepository repository, int id, ProductMapper mapper) =>
+app.MapGet("/api/products/map/{id:int}", async (IProductRepository repository, int id, ProductMapper mapper) =>
 {
     var product = await repository.GetById(id);
 
     return Results.Ok(mapper.Map(product));
-});
+}).RequireAuthorization();
 
+// PUT / PATCH
 
 app.MapFastEndpoints();
 
