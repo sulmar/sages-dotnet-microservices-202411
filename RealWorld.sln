@@ -31,6 +31,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YarpApiGateway", "src\ApiGateway\YarpApiGateway\YarpApiGateway.csproj", "{D681327B-4DE1-4B81-93DC-9401AE6D6565}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityProvider", "IdentityProvider", "{6C350734-89C4-43C9-8273-5397DB4BC9EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Api", "src\IdentityProvider\Auth.Api\Auth.Api.csproj", "{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,10 @@ Global
 		{D681327B-4DE1-4B81-93DC-9401AE6D6565}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D681327B-4DE1-4B81-93DC-9401AE6D6565}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D681327B-4DE1-4B81-93DC-9401AE6D6565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,5 +93,6 @@ Global
 		{B4378738-B944-45EA-96CD-5ADB1C2C2E8F} = {59D4C3B9-C285-4E8D-AD2A-2CB37D39276E}
 		{8007AAC8-689E-4F76-AEC9-26E1829B0E77} = {59D4C3B9-C285-4E8D-AD2A-2CB37D39276E}
 		{D681327B-4DE1-4B81-93DC-9401AE6D6565} = {029CB7D1-15B4-4F23-9789-F4C4495170C0}
+		{92C71AF5-2A4C-4DF8-8C5B-E9F57A697779} = {6C350734-89C4-43C9-8273-5397DB4BC9EC}
 	EndGlobalSection
 EndGlobal
