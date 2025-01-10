@@ -1,37 +1,47 @@
 ﻿using Auth.Api.Abstractions;
 using Auth.Api.Models;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Auth.Api.Infrastructures;
 
-// dotnet add package System.IdentityModel.Tokens.Jwt
+// dotnet add package Microsoft.IdentityModel.JsonWebTokens
 
 public class JwtTokenService : ITokenService
 {
     public string CreateAccessToken(UserIdentity identity)
     {
-        var claims = new[]
+        var claims = new Dictionary<string, object>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, identity.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
+            [JwtRegisteredClaimNames.Sub] = "public_key",
+            [JwtRegisteredClaimNames.Email] = identity.Email,
+            [JwtRegisteredClaimNames.Name] = identity.Email,
+            [JwtRegisteredClaimNames.GivenName] = identity.FirstName,
+            [JwtRegisteredClaimNames.FamilyName] = identity.LastName,
+            [ClaimTypes.Role] = "trainer",
+            [ClaimTypes.Role] = "developer"
+        };
+        
+        string secretkey = "your-secret-key-your-secret-key-your-secret-key";
+        
+        var securityKey = new SymmetricSecurityKey(System.Text.Encoding.Default.GetBytes(secretkey));
 
-            new Claim(ClaimTypes.Role, "trainer"),
-            new Claim(ClaimTypes.Role, "developer"),
+        var descriptor = new SecurityTokenDescriptor
+        {
+            Issuer = "your-issuer",
+            Audience = "your-issuer",
+            Claims = claims,
+            IssuedAt = null,
+            NotBefore = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddMinutes(15),
+            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key-your-secret-key-your-secret-key"));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var jwt_token = new JsonWebTokenHandler().CreateToken(descriptor);
 
-        var token = new JwtSecurityToken(
-            issuer: "your-issuer",
-            audience: "your-audience",
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(5),
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return jwt_token;
+     
     }
 }
